@@ -5,10 +5,11 @@ from typing import Any, Optional
 from singer_sdk import typing as th
 
 from tap_flowcode.client import FlowcodeStream
-from pendulum import parse
+
 
 class UsersStream(FlowcodeStream):
     """Define custom stream."""
+
     name = "users"
     path = "/ListContacts"
     records_jsonpath = "$.conversions[*]"
@@ -26,17 +27,17 @@ class UsersStream(FlowcodeStream):
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Optional[dict]:
         payload = {
-            "orgId":self.config.get("org_id"),
-            "workspaceId":self.config.get("workspace_id"),
+            "orgId": self.config.get("org_id"),
+            "workspaceId": self.config.get("workspace_id"),
         }
-        
+
         start_date = self.get_starting_time(context)
         if start_date:
-            start_date = start_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+            start_date = start_date.strftime("%Y-%m-%dT%H:%M:%SZ")
             payload["filter"] = {
                 "date_filter": {
                     "timezone": self.config.get("timezone", "Etc/UCT"),
-                    "start_time": start_date
+                    "start_time": start_date,
                 }
             }
         payload["pagination"] = {
@@ -47,10 +48,9 @@ class UsersStream(FlowcodeStream):
         if next_page_token:
             payload["pagination"]["after"] = next_page_token
         return payload
-    
-    def post_process(self, row: dict, context: dict) -> dict :
+
+    def post_process(self, row: dict, context: dict) -> dict:
         new_row = {}
         new_row["firstConvertedAt"] = row["firstConvertedAt"]
         new_row.update(row["user"])
         return new_row
-    

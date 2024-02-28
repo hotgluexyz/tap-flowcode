@@ -1,17 +1,15 @@
 """REST client handling, including FlowcodeStream base class."""
 
-import requests
 from pathlib import Path
-from typing import Any, Dict, Optional, Union, List, Iterable
+from typing import Any, Optional
 
-from memoization import cached
-
+import requests
+from pendulum import parse
+from singer_sdk.authenticators import APIKeyAuthenticator
 from singer_sdk.helpers.jsonpath import extract_jsonpath
 from singer_sdk.streams import RESTStream
-from singer_sdk.authenticators import APIKeyAuthenticator
-from pendulum import parse
-from tap_flowcode.auth import OAuth2Authenticator
 
+from tap_flowcode.auth import OAuth2Authenticator
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
@@ -24,7 +22,6 @@ class FlowcodeStream(RESTStream):
         if self.config.get("base_url"):
             return self.config.get("base_url")
         return "https://gateway.flowcode.com"
-    
 
     records_jsonpath = "$[*]"
     next_page_token_jsonpath = "$.pageInfo.endCursor"
@@ -36,10 +33,7 @@ class FlowcodeStream(RESTStream):
             oauth_url = self.config.get("token_endpoint")
             return OAuth2Authenticator(self, self.config, auth_endpoint=oauth_url)
         return APIKeyAuthenticator.create_for_stream(
-            self,
-            key="apikey",
-            value=self.config.get("api_key"),
-            location="header"
+            self, key="apikey", value=self.config.get("api_key"), location="header"
         )
 
     @property
@@ -61,7 +55,7 @@ class FlowcodeStream(RESTStream):
             first_match = next(iter(all_matches), None)
             next_page_token = first_match
         return next_page_token
-    
+
     def get_starting_time(self, context):
         start_date = self.config.get("start_date")
         if start_date:
