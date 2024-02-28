@@ -27,7 +27,7 @@ class FlowcodeStream(RESTStream):
     
 
     records_jsonpath = "$[*]"
-    next_page_token_jsonpath = "$.pageInfo.endcursor"
+    next_page_token_jsonpath = "$.pageInfo.endCursor"
 
     @property
     def authenticator(self):
