@@ -17,11 +17,21 @@ class TapFlowcode(Tap):
     """Flowcode tap class."""
     name = "tap-flowcode"
 
+    def __init__(
+        self,
+        config=None,
+        catalog=None,
+        state=None,
+        parse_env_config=False,
+        validate_config=True,
+    ) -> None:
+        self.config_file = config[0]
+        super().__init__(config, catalog, state, parse_env_config, validate_config)
+
     config_jsonschema = th.PropertiesList(
         th.Property(
             "api_key",
             th.StringType,
-            required=True,
         ),
         th.Property(
             "base_url",
@@ -36,6 +46,14 @@ class TapFlowcode(Tap):
             "workspace_id",
             th.StringType,
             required=True,
+        ),
+        th.Property(
+            "client_id",
+            th.StringType,
+        ),
+        th.Property(
+            "client_secret",
+            th.StringType,
         ),
     ).to_dict()
 

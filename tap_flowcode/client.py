@@ -10,6 +10,7 @@ from singer_sdk.helpers.jsonpath import extract_jsonpath
 from singer_sdk.streams import RESTStream
 from singer_sdk.authenticators import APIKeyAuthenticator
 from pendulum import parse
+from tap_flowcode.auth import OAuth2Authenticator
 
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
@@ -29,8 +30,11 @@ class FlowcodeStream(RESTStream):
     next_page_token_jsonpath = "$.pageInfo.endcursor"
 
     @property
-    def authenticator(self) -> APIKeyAuthenticator:
+    def authenticator(self):
         """Return a new authenticator object."""
+        if self.config.get("client_id"):
+            oauth_url = self.config.get("token_endpoint")
+            return OAuth2Authenticator(self, self.config, auth_endpoint=oauth_url)
         return APIKeyAuthenticator.create_for_stream(
             self,
             key="apikey",
