@@ -25,7 +25,7 @@ class FlowcodeStream(RESTStream):
     def authenticator(self):
         """Return a new authenticator object."""
         if self.config.get("client_id"):
-            oauth_url = self.config.get("token_url", "https://auth-stg.flowcode.com/oauth/token")
+            oauth_url = "https://auth-stg.flowcode.com/oauth/token"
             return OAuth2Authenticator(self, self.config, auth_endpoint=oauth_url)
         return APIKeyAuthenticator.create_for_stream(
             self, key="apikey", value=self.config.get("api_key"), location="header"
