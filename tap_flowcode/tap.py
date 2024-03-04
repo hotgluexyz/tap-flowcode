@@ -34,10 +34,6 @@ class TapFlowcode(Tap):
             th.StringType,
         ),
         th.Property(
-            "base_url",
-            th.StringType,
-        ),
-        th.Property(
             "org_id",
             th.StringType,
             required=True,

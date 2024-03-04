@@ -17,12 +17,7 @@ SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 class FlowcodeStream(RESTStream):
     """Flowcode stream class."""
 
-    @property
-    def url_base(self):
-        if self.config.get("base_url"):
-            return self.config.get("base_url")
-        return "https://gateway.flowcode.com"
-
+    url_base = "https://conversions.stg.flowcode.com/abacus.v1.AbacusService"
     records_jsonpath = "$[*]"
     next_page_token_jsonpath = "$.pageInfo.endCursor"
 
@@ -30,7 +25,7 @@ class FlowcodeStream(RESTStream):
     def authenticator(self):
         """Return a new authenticator object."""
         if self.config.get("client_id"):
-            oauth_url = self.config.get("token_endpoint")
+            oauth_url = self.config.get("token_url")
             return OAuth2Authenticator(self, self.config, auth_endpoint=oauth_url)
         return APIKeyAuthenticator.create_for_stream(
             self, key="apikey", value=self.config.get("api_key"), location="header"
